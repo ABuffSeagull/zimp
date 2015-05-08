@@ -63,6 +63,13 @@ var player = {
     y: 0
 };
 
+// Make a 23x13 grid of empty rooms
+    var grid = [];
+    for (var i = 0; i < 23; i++) {
+        grid[i] = [];
+        grid[i][12] = undefined;
+    }
+
 var map = {
     /* Grid consits of an array in an array, the first being rows (player's y-position)
         and the second is columns (player's x-position) */
