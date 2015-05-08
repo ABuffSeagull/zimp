@@ -1,52 +1,58 @@
-/* Global vars */
+// Global vars //{{{
+// Room Constructor//{{{
 var Room = function(name, exits) {
-    this.exists = true;
-    this.name = name;
-    this.doors = [false, false, false, false];
-    this.locked = false;
-    for (var i = 0; i < exits.length; i++) {
-        switch (exits[i]) {
-            case 'N':
-                this.doors[0] = true;
-                break;
-            case 'E':
-                this.doors[1] = true;
-                break;
-            case 'S':
-                this.doors[2] = true;
-                break;
-            case 'W':
-                this.doors[3] = true;
-                break;
-        }
-    }
-    if (this.name === 'Dining Room') {
-        this.doors[0] = 'special';
-    }
-    this.rotate = function(rot) {
-        var temp = false;
-        for (var i = 0; i < rot; ++i) {
-            temp = this.doors.pop();
-            this.doors.unshift(temp);
-        }
-    };
-};
-
+	// Properties //{{{
+	this.exists = true;
+	this.name = name;
+	this.doors = [false, false, false, false];
+	this.locked = false;
+	// Door Init//{{{
+	for (var i = 0; i < exits.length; i++) {
+		switch (exits[i]) {
+			case 'N':
+				this.doors[0] = true;
+				break;
+			case 'E':
+				this.doors[1] = true;
+				break;
+			case 'S':
+				this.doors[2] = true;
+				break;
+			case 'W':
+				this.doors[3] = true;
+				break;
+		}
+	}//}}}
+	if (this.name === 'Dining Room') {
+		this.doors[0] = 'special';
+	}//}}}
+	// Rotate Function//{{{
+	this.rotate = function(rot) {
+		var temp = false;
+		for (var i = 0; i < rot; ++i) {
+			temp = this.doors.pop();
+			this.doors.unshift(temp);
+		}
+	};//}}}
+};//}}}
+// Init Piles//{{{
+// Inside Pile//{{{
 var insidePile = [new Room('Bathroom', 'N'),
                     new Room('Kitchen', 'NEW'),
                     new Room('Storage', 'N'),
                     new Room('Evil Temple', 'EW'),
                     new Room('Family Room', 'NES'),
                     new Room('Dining Room', 'NESW'),
-                    new Room('Bedroom', 'NW')];
+                    new Room('Bedroom', 'NW')];//}}}
+// Outside Pile//{{{
 var outsidePile = [new Room('Garden', 'ESW'),
                     new Room('Sitting Area', 'ESW'),
                     new Room('Yard1', 'ESW'),
                     new Room('Graveyard', 'ES'),
                     new Room('Garage', 'SW'),
                     new Room('Yard2', 'ESW'),
-                    new Room('Yard3', 'ESW')];
-
+                    new Room('Yard3', 'ESW')];//}}}//}}}
+// Shuffle Function//{{{
 var shuffle = function(pile) {
     var i = pile.length,
         temp, randi;
@@ -56,20 +62,19 @@ var shuffle = function(pile) {
         pile[i] = pile[randi];
         pile[randi] = temp;
     }
-};
-
+};//}}}
+// Player Object//{{{
 var player = {
     x: 0,
     y: 0
-};
-
-// Make a 23x13 grid of empty rooms
-    var grid = [];
-    for (var i = 0; i < 23; i++) {
-        grid[i] = [];
-        grid[i][12] = undefined;
-    }
-
+};//}}}
+// Make a 23x13 grid of empty rooms//{{{
+var grid = [];
+for (var i = 0; i < 23; i++) {
+	grid[i] = [];
+	grid[i][12] = undefined;
+}//}}}
+// The Map //{{{
 var map = {
     /* Grid consits of an array in an array, the first being rows (player's y-position)
         and the second is columns (player's x-position) */
@@ -135,10 +140,9 @@ var map = {
 
         }
     }
-};
-var $ = jQuery.noConflict();
+};//}}}//}}}
 
-/* Run the game! */
+// Run the game!//{{{
 $(document).ready(function() {
     for (var i = 1; i < 4; i++) { // Hide the exits the foyer can't have
         $('#doors' + i).hide();
@@ -224,4 +228,4 @@ $(document).ready(function() {
             $('#log').text('Illegal Rotation');
         }
     });
-});
+});//}}}
