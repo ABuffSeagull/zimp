@@ -78,14 +78,14 @@ for (var i = 0; i < 23; i++) {
 var map = {
     /* Grid consits of an array in an array, the first being rows (player's y-position)
         and the second is columns (player's x-position) */
-    grid: [
+    grid: 
         [new Room("Foyer", "N")]
     ],
     move: function(dir, p) {
         var pile = [insidePile, outsidePile];
         switch (dir) {
 
-            /* Moving Up */
+            // Moving Up//{{{
             case "doors3":
                 if (player.y === 0) {
                     for (var i = 0; i < this.grid.length; i++) {
@@ -99,9 +99,9 @@ var map = {
                         this.grid[player.x][player.y] = pile[p].pop();
                     }
                 }
-                break;
+                break;//}}}
 
-                /* Moving Right */
+                // Moving Right //{{{
             case "doors2":
                 if ((player.x + 1) <= (this.grid.length - 1)) {
                     try {
@@ -113,18 +113,18 @@ var map = {
                     this.grid.push([]);
                     this.grid[++player.x][player.y] = pile[p].pop(); // And again
                 }
-                break;
+                break;//}}}
 
-                /* Moving Down */
+                // Moving Down //{{{
             case "doors1":
                 try {
                     this.grid[player.x][++player.y].exists; // same as above
                 } catch (e) {
                     this.grid[player.x].push(pile[p].pop());
                 }
-                break;
+                break;//}}}
 
-                /* Moving Left */
+                // Moving Left //{{{
             case "doors0":
                 if (player.x === 0) {
                     this.grid.unshift([]);
@@ -136,7 +136,7 @@ var map = {
                         this.grid[player.x][player.y] = pile[p].pop();
                     }
                 }
-                break;
+                break;//}}}
 
         }
     }
