@@ -90,25 +90,16 @@ var Map = function() {
 	this.move = function(dir, p) {
 		var pile = [insidePile, outsidePile];
 		switch (dir) {
-			// Moving Up//{{{
-			case "doors3":
+			// Moving Up //{{{
+			case "doors0":
 				try {
-					this.grid[player.x][--player.y].exists; // decrements y-pos during here, so no need to do it wherever else
-				} catch (e) {
-					this.grid[player.x][player.y] = pile[p].pop();
-				}
-			break;//}}}
-
-			// Moving Right //{{{
-			case "doors2":
-				try {
-					this.grid[++player.x][player.y].exists; // same as below
+					this.grid[--player.x][player.y].exists; // decrements x-pos during here, so no need to do it wherever else
 				} catch (e) {
 					this.grid[player.x][player.y] = pile[p].pop();
 				}
 				break;//}}}
-		
-			// Moving Down //{{{
+
+			// Moving Right //{{{
 			case "doors1":
 				try {
 					this.grid[player.x][++player.y].exists; // same as above
@@ -117,14 +108,23 @@ var Map = function() {
 				}
 				break;//}}}
 
-			// Moving Left //{{{
-			case "doors0":
+			// Moving Down //{{{
+			case "doors2":
 				try {
-					this.grid[--player.x][player.y].exists; // decrements x-pos during here, so no need to do it wherever else
+					this.grid[++player.x][player.y].exists; // same as below
 				} catch (e) {
 					this.grid[player.x][player.y] = pile[p].pop();
 				}
 				break;//}}}
+
+			// Moving Left //{{{
+			case "doors3":
+				try {
+					this.grid[player.x][--player.y].exists; // decrements y-pos during here, so no need to do it wherever else
+				} catch (e) {
+					this.grid[player.x][player.y] = pile[p].pop();
+				}
+			break;//}}}
 		}
 	}//}}}
 };//}}}//}}}
