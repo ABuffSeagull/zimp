@@ -65,81 +65,79 @@ var shuffle = function(pile) {
 };//}}}
 // Player Object//{{{
 var player = {
-    x: 0,
-    y: 0
+    x: 11,
+    y: 10
 };//}}}
-// Make a 23x13 grid of empty rooms//{{{
-var grid = [];
-for (var i = 0; i < 23; i++) {
-	grid[i] = [];
-	grid[i][12] = undefined;
-}//}}}
 // The Map //{{{
-var map = {
-    /* Grid consits of an array in an array, the first being rows (player's y-position)
-        and the second is columns (player's x-position) */
-    grid: 
-        [new Room("Foyer", "N")]
-    ],
-    move: function(dir, p) {
-        var pile = [insidePile, outsidePile];
-        switch (dir) {
+var Map = function() {
+	// Grid//{{{
+	// 23 x 21 grid, Max height and width possible
+	// 1st array is x-pos (columns), and 2nd is y-pos (rows)
+	this.grid = [];
+	for (var i = 0; i < 23; i++) {
+		this.grid[i] = [];
+		this.grid[i][20] = undefined;
+	}
+	this.grid[11][10] = new Room("Foyer", "N");//}}}
 
-            // Moving Up//{{{
-            case "doors3":
-                if (player.y === 0) {
-                    for (var i = 0; i < this.grid.length; i++) {
-                        this.grid[i].unshift(undefined);
-                    }
-                    this.grid[player.x][0] = pile[p].pop();
-                } else {
-                    try {
-                        this.grid[player.x][--player.y].exists; // decrements y-pos during here, so no need to do it wherever else
-                    } catch (e) {
-                        this.grid[player.x][player.y] = pile[p].pop();
-                    }
-                }
-                break;//}}}
+	// Move Function//{{{
+	this.move = function(dir, p) {
+		var pile = [insidePile, outsidePile];
+		switch (dir) {
+			// Moving Up//{{{
+			case "doors3":
+				if (player.y === 0) {
+					for (var i = 0; i < this.grid.length; i++) {
+						this.grid[i].unshift(undefined);
+					}
+					this.grid[player.x][0] = pile[p].pop();
+				} else {
+					try {
+						this.grid[player.x][--player.y].exists; // decrements y-pos during here, so no need to do it wherever else
+					} catch (e) {
+						this.grid[player.x][player.y] = pile[p].pop();
+					}
+				}
+				break;//}}}
 
-                // Moving Right //{{{
-            case "doors2":
-                if ((player.x + 1) <= (this.grid.length - 1)) {
-                    try {
-                        this.grid[++player.x][player.y].exists; // same as below
-                    } catch (e) {
-                        this.grid[player.x][player.y] = pile[p].pop();
-                    }
-                } else {
-                    this.grid.push([]);
-                    this.grid[++player.x][player.y] = pile[p].pop(); // And again
-                }
-                break;//}}}
+			// Moving Right //{{{
+			case "doors2":
+				if ((player.x + 1) <= (this.grid.length - 1)) {
+					try {
+						this.grid[++player.x][player.y].exists; // same as below
+					} catch (e) {
+						this.grid[player.x][player.y] = pile[p].pop();
+					}
+				} else {
+					this.grid.push([]);
+					this.grid[++player.x][player.y] = pile[p].pop(); // And again
+				}
+				break;//}}}
+		
+			// Moving Down //{{{
+			case "doors1":
+				try {
+					this.grid[player.x][++player.y].exists; // same as above
+				} catch (e) {
+					this.grid[player.x].push(pile[p].pop());
+				}
+				break;//}}}
 
-                // Moving Down //{{{
-            case "doors1":
-                try {
-                    this.grid[player.x][++player.y].exists; // same as above
-                } catch (e) {
-                    this.grid[player.x].push(pile[p].pop());
-                }
-                break;//}}}
-
-                // Moving Left //{{{
-            case "doors0":
-                if (player.x === 0) {
-                    this.grid.unshift([]);
-                    this.grid[0][player.y] = pile[p].pop();
-                } else {
-                    try {
-                        this.grid[--player.x][player.y].exists; // decrements x-pos during here, so no need to do it wherever else
-                    } catch (e) {
-                        this.grid[player.x][player.y] = pile[p].pop();
-                    }
-                }
-                break;//}}}
-
-        }
-    }
+			// Moving Left //{{{
+			case "doors0":
+				if (player.x === 0) {
+					this.grid.unshift([]);
+					this.grid[0][player.y] = pile[p].pop();
+				} else {
+					try {
+						this.grid[--player.x][player.y].exists; // decrements x-pos during here, so no need to do it wherever else
+					} catch (e) {
+						this.grid[player.x][player.y] = pile[p].pop();
+					}
+				}
+				break;//}}}
+		}
+	}//}}}
 };//}}}//}}}
 
 // Run the game!//{{{
@@ -152,6 +150,7 @@ $(document).ready(function() {
     outsidePile.push(new Room('Patio', 'NES'));
     $('#rotateButton').hide();
     $('#lockButton').hide();
+    var map = new Map();
     map.grid[player.x][player.y].locked = true;
     var side = 0;
     var lastDir = 0;
@@ -163,7 +162,6 @@ $(document).ready(function() {
                 side = 1;
             }
             map.move($(this).attr('id'), side);
-            console.info('DEBUG: lastDir = ' + $(this).attr('id')[5]);
             lastDir = Number($(this).attr('id')[5]);
             var curRoom = map.grid[player.x][player.y];
             $('#curRoom').text(curRoom.name);
@@ -218,7 +216,6 @@ $(document).ready(function() {
         }
     });
     $("#lockButton").click(function() {
-        console.log("DEBUG: lastDir =",lastDir, "Mod:", (lastDir + 2) % 4);
         if (map.grid[player.x][player.y].doors[(lastDir + 2) % 4]) { // Check if there is a door in the direction they just came from
             map.grid[player.x][player.y].locked = true;
             $("#rotateButton").hide();
