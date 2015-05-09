@@ -92,31 +92,19 @@ var Map = function() {
 		switch (dir) {
 			// Moving Up//{{{
 			case "doors3":
-				if (player.y === 0) {
-					for (var i = 0; i < this.grid.length; i++) {
-						this.grid[i].unshift(undefined);
-					}
-					this.grid[player.x][0] = pile[p].pop();
-				} else {
-					try {
-						this.grid[player.x][--player.y].exists; // decrements y-pos during here, so no need to do it wherever else
-					} catch (e) {
-						this.grid[player.x][player.y] = pile[p].pop();
-					}
+				try {
+					this.grid[player.x][--player.y].exists; // decrements y-pos during here, so no need to do it wherever else
+				} catch (e) {
+					this.grid[player.x][player.y] = pile[p].pop();
 				}
-				break;//}}}
+			break;//}}}
 
 			// Moving Right //{{{
 			case "doors2":
-				if ((player.x + 1) <= (this.grid.length - 1)) {
-					try {
-						this.grid[++player.x][player.y].exists; // same as below
-					} catch (e) {
-						this.grid[player.x][player.y] = pile[p].pop();
-					}
-				} else {
-					this.grid.push([]);
-					this.grid[++player.x][player.y] = pile[p].pop(); // And again
+				try {
+					this.grid[++player.x][player.y].exists; // same as below
+				} catch (e) {
+					this.grid[player.x][player.y] = pile[p].pop();
 				}
 				break;//}}}
 		
@@ -131,15 +119,10 @@ var Map = function() {
 
 			// Moving Left //{{{
 			case "doors0":
-				if (player.x === 0) {
-					this.grid.unshift([]);
-					this.grid[0][player.y] = pile[p].pop();
-				} else {
-					try {
-						this.grid[--player.x][player.y].exists; // decrements x-pos during here, so no need to do it wherever else
-					} catch (e) {
-						this.grid[player.x][player.y] = pile[p].pop();
-					}
+				try {
+					this.grid[--player.x][player.y].exists; // decrements x-pos during here, so no need to do it wherever else
+				} catch (e) {
+					this.grid[player.x][player.y] = pile[p].pop();
 				}
 				break;//}}}
 		}
@@ -166,6 +149,7 @@ $(document).ready(function() {
 	map.grid[player.x][player.y].locked = true;
 	var side = 0;
 	var lastDir = 0;
+	var curRoom = undefined;
 	$('#curRoom').text(map.grid[player.x][player.y].name);//}}}
 
 	// Movement//{{{
@@ -176,7 +160,7 @@ $(document).ready(function() {
 			}
 			map.move($(this).attr('id'), side);
 			lastDir = Number($(this).attr('id')[5]);
-			var curRoom = map.grid[player.x][player.y];
+			curRoom = map.grid[player.x][player.y];
 			$('#curRoom').text(curRoom.name);
 			for (var i = 0; i < 4; i++) {
 				if (curRoom.doors[i] === 'special') {
