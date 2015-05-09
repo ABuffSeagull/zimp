@@ -26,6 +26,7 @@ var Room = function(name, exits) {
 	if (this.name === 'Dining Room') {
 		this.doors[0] = 'special';
 	}//}}}
+
 	// Rotate Function//{{{
 	this.rotate = function(rot) {
 		var temp = false;
@@ -35,6 +36,7 @@ var Room = function(name, exits) {
 		}
 	};//}}}
 };//}}}
+
 // Init Piles//{{{
 // Inside Pile//{{{
 var insidePile = [new Room('Bathroom', 'N'),
@@ -44,6 +46,7 @@ var insidePile = [new Room('Bathroom', 'N'),
                     new Room('Family Room', 'NES'),
                     new Room('Dining Room', 'NESW'),
                     new Room('Bedroom', 'NW')];//}}}
+
 // Outside Pile//{{{
 var outsidePile = [new Room('Garden', 'ESW'),
                     new Room('Sitting Area', 'ESW'),
@@ -52,6 +55,7 @@ var outsidePile = [new Room('Garden', 'ESW'),
                     new Room('Garage', 'SW'),
                     new Room('Yard2', 'ESW'),
                     new Room('Yard3', 'ESW')];//}}}//}}}
+
 // Shuffle Function//{{{
 var shuffle = function(pile) {
     var i = pile.length,
@@ -63,11 +67,13 @@ var shuffle = function(pile) {
         pile[randi] = temp;
     }
 };//}}}
+
 // Player Object//{{{
 var player = {
     x: 11,
     y: 10
 };//}}}
+
 // The Map //{{{
 var Map = function() {
 	// Grid//{{{
@@ -142,87 +148,97 @@ var Map = function() {
 
 // Run the game!//{{{
 $(document).ready(function() {
-    for (var i = 1; i < 4; i++) { // Hide the exits the foyer can't have
-        $('#doors' + i).hide();
-    }
-    shuffle(insidePile);
-    shuffle(outsidePile);
-    outsidePile.push(new Room('Patio', 'NES'));
-    $('#rotateButton').hide();
-    $('#lockButton').hide();
-    var map = new Map();
-    map.grid[player.x][player.y].locked = true;
-    var side = 0;
-    var lastDir = 0;
+	// Hide unneeded buttons//{{{
+	for (var i = 1; i < 4; i++) { 
+		$('#doors' + i).hide();
+	}
+	$('#rotateButton').hide();
+	$('#lockButton').hide();//}}}
 
-    $('#curRoom').text(map.grid[player.x][player.y].name);
-    $(".exits").click(function() {
-        if (map.grid[player.x][player.y].locked) {
-            if ((map.grid[player.x][player.y].name === 'Dining Room') && map.grid[player.x][player.y].doors[$(this).attr('id')[5]] === "special") {
-                side = 1;
-            }
-            map.move($(this).attr('id'), side);
-            lastDir = Number($(this).attr('id')[5]);
-            var curRoom = map.grid[player.x][player.y];
-            $('#curRoom').text(curRoom.name);
-            for (var i = 0; i < 4; i++) {
-                if (curRoom.doors[i] === 'special') {
-                    $('#doors' + i).show();
-                    $('#doors' + i).css('color', 'red');
-                } else if (curRoom.doors[i]) {
-                    $('#doors' + i).show();
-                    $('#doors' + i).css('color', 'black');
-                } else {
-                    $('#doors' + i).hide();
-                }
-            }
-            if (!curRoom.locked) {
-                $('#lockButton').show();
-                $('#rotateButton').show();
-            }
-        }
+	// Misc set up//{{{
+	// Shuffle Piles
+	shuffle(insidePile);
+	shuffle(outsidePile);
+	// Put the patio on top of the deck
+	outsidePile.push(new Room('Patio', 'NES'));
+	// Init a few needed variables	
+	var map = new Map();
+	map.grid[player.x][player.y].locked = true;
+	var side = 0;
+	var lastDir = 0;
+	$('#curRoom').text(map.grid[player.x][player.y].name);//}}}
 
-        $('#map').empty();
-        for (var j = map.grid.length; j > 0; j--) {
-            $('#map').prepend("<tr id='col" + j + "'></tr>");
-            for (var k = map.grid[j - 1].length; k > 0; k--) {
-                if (map.grid[j - 1][k - 1] !== undefined) {
-                    var tableRoom = $('<td>' + map.grid[j - 1][k - 1].name + '</td>');
-                    $('#col' + j).prepend(tableRoom);
-                    if (map.grid[j - 1][k - 1].name === map.grid[player.x][player.y].name) {
-                        tableRoom.css('background-color', 'green');
-                    }
-                } else {
-                    $('#col' + j).prepend('<td class="emptyRoom"></td>');
-                }
-            }
-        }
+	// Movement//{{{
+	$(".exits").click(function() {
+		if (map.grid[player.x][player.y].locked) {
+			if ((map.grid[player.x][player.y].name === 'Dining Room') && map.grid[player.x][player.y].doors[$(this).attr('id')[5]] === "special") {
+				side = 1;
+			}
+			map.move($(this).attr('id'), side);
+			lastDir = Number($(this).attr('id')[5]);
+			var curRoom = map.grid[player.x][player.y];
+			$('#curRoom').text(curRoom.name);
+			for (var i = 0; i < 4; i++) {
+				if (curRoom.doors[i] === 'special') {
+					$('#doors' + i).show();
+					$('#doors' + i).css('color', 'red');
+				} else if (curRoom.doors[i]) {
+					$('#doors' + i).show();
+					$('#doors' + i).css('color', 'black');
+				} else {
+					$('#doors' + i).hide();
+				}
+			}
+			if (!curRoom.locked) {
+				$('#lockButton').show();
+				$('#rotateButton').show();
+			}
+		}
+		
+		$('#map').empty();
+		for (var j = map.grid.length; j > 0; j--) {
+			$('#map').prepend("<tr id='col" + j + "'></tr>");
+			for (var k = map.grid[j - 1].length; k > 0; k--) {
+				if (map.grid[j - 1][k - 1] !== undefined) {
+					var tableRoom = $('<td>' + map.grid[j - 1][k - 1].name + '</td>');
+					$('#col' + j).prepend(tableRoom);
+					if (map.grid[j - 1][k - 1].name === map.grid[player.x][player.y].name) {
+						tableRoom.css('background-color', 'green');
+					}
+				} else {
+					$('#col' + j).prepend('<td class="emptyRoom"></td>');
+				}
+			}
+		}
+	});//}}}
+	
+	// Rotation//{{{
+	$("#rotateButton").click(function() {
+		var curRoom = map.grid[player.x][player.y];
+		curRoom.rotate(1);
+		$('#curRoom').text(curRoom.name);
+		for (var i = 0; i < 4; i++) {
+			if (curRoom.doors[i] === 'special') {
+				$('#doors' + i).show();
+				$('#doors' + i).css('color', 'red');
+			} else if (curRoom.doors[i]) {
+				$('#doors' + i).show();
+				$('#doors' + i).css('color', 'black');
+			} else {
+				$('#doors' + i).hide();
+			}
+		}
+	});//}}}
 
-    });
-    $("#rotateButton").click(function() {
-        var curRoom = map.grid[player.x][player.y];
-        curRoom.rotate(1);
-        $('#curRoom').text(curRoom.name);
-        for (var i = 0; i < 4; i++) {
-            if (curRoom.doors[i] === 'special') {
-                $('#doors' + i).show();
-                $('#doors' + i).css('color', 'red');
-            } else if (curRoom.doors[i]) {
-                $('#doors' + i).show();
-                $('#doors' + i).css('color', 'black');
-            } else {
-                $('#doors' + i).hide();
-            }
-        }
-    });
-    $("#lockButton").click(function() {
-        if (map.grid[player.x][player.y].doors[(lastDir + 2) % 4]) { // Check if there is a door in the direction they just came from
-            map.grid[player.x][player.y].locked = true;
-            $("#rotateButton").hide();
-            $("#lockButton").hide();
-            $('#log').text('');
-        } else {
-            $('#log').text('Illegal Rotation');
-        }
-    });
+	// Rotation Lock//{{{
+	$("#lockButton").click(function() {
+		if (map.grid[player.x][player.y].doors[(lastDir + 2) % 4]) { // Check if there is a door in the direction they just came from
+			map.grid[player.x][player.y].locked = true;
+			$("#rotateButton").hide();
+			$("#lockButton").hide();
+			$('#log').text('');
+		} else {
+			$('#log').text('Illegal Rotation');
+		}
+	});//}}}
 });//}}}
