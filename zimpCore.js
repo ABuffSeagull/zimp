@@ -113,7 +113,7 @@ var Map = function() {
 				try {
 					this.grid[player.x][++player.y].exists; // same as above
 				} catch (e) {
-					this.grid[player.x].push(pile[p].pop());
+					this.grid[player.x][player.y] = pile[p].pop();
 				}
 				break;//}}}
 
@@ -161,6 +161,7 @@ $(document).ready(function() {
 			map.move($(this).attr('id'), side);
 			lastDir = Number($(this).attr('id')[5]);
 			curRoom = map.grid[player.x][player.y];
+			console.log("DEBUG: " + curRoom.name);
 			$('#curRoom').text(curRoom.name);
 			for (var i = 0; i < 4; i++) {
 				if (curRoom.doors[i] === 'special') {
