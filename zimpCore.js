@@ -6,6 +6,7 @@ var Room = function(name, exits) {
 	this.name = name;
 	this.doors = [false, false, false, false];
 	this.locked = false;
+	this.door_numbers = exits.length;
 	// Door Init//{{{
 	for (var i = 0; i < exits.length; i++) {
 		switch (exits[i]) {
@@ -136,7 +137,8 @@ $(document).ready(function() {
 		$('#doors' + i).hide();
 	}
 	$('#rotateButton').hide();
-	$('#lockButton').hide();//}}}
+	$('#lockButton').hide();
+	$('#breakWallButton').hide();//}}}
 
 	// Misc set up//{{{
 	// Shuffle Piles
@@ -149,19 +151,26 @@ $(document).ready(function() {
 	map.grid[player.x][player.y].locked = true;
 	var side = 0;
 	var lastDir = 0;
+	var open_doors = 1;
 	var curRoom = undefined;
+	var wall_break = false;
 	$('#curRoom').text(map.grid[player.x][player.y].name);//}}}
 
 	// Movement//{{{
 	$(".exits").click(function() {
-		if (map.grid[player.x][player.y].locked) {
-			if ((map.grid[player.x][player.y].name === 'Dining Room') && map.grid[player.x][player.y].doors[$(this).attr('id')[5]] === "special") {
+		curRoom = map.grid[player.x][player.y]
+		if (curRoom.locked) {
+			if ((curRoom.name === 'Dining Room') && curRoom.doors[$(this).attr('id')[5]] === "special") {
 				side = 1;
+			}
+			if (wall_break = true) {
+				curRoom.doors[Number($(this).attr('id')[5])] = true;
+				wall_break = false;
+				$('#breakWallButton').hide();
 			}
 			map.move($(this).attr('id'), side);
 			lastDir = Number($(this).attr('id')[5]);
 			curRoom = map.grid[player.x][player.y];
-			console.log("DEBUG: " + curRoom.name);
 			$('#curRoom').text(curRoom.name);
 			for (var i = 0; i < 4; i++) {
 				if (curRoom.doors[i] === 'special') {
@@ -218,12 +227,30 @@ $(document).ready(function() {
 	// Rotation Lock//{{{
 	$("#lockButton").click(function() {
 		if (map.grid[player.x][player.y].doors[(lastDir + 2) % 4]) { // Check if there is a door in the direction they just came from
-			map.grid[player.x][player.y].locked = true;
+			curRoom.locked = true;
+			open_doors = (open_doors + curRoom.door_numbers) - 2;
+			if (open_doors == 0) {
+				$("#breakWallButton").show();
+			}
 			$("#rotateButton").hide();
 			$("#lockButton").hide();
 			$('#log').text('');
 		} else {
 			$('#log').text('Illegal Rotation');
+		}
+	});//}}}
+
+	// Break Wall! //{{{
+	$("#breakWallButton").click(function() {
+		wall_break = true;
+		++open_doors;
+		for (var i = 0; i < 4; i++) {
+			if (i != (lastDir+2)%4) {
+				$("#doors" + i).show();
+				$("#doors" + i).css('color', 'red');
+			} else {
+				$('#doors' + i).hide();
+			}
 		}
 	});//}}}
 });//}}}
