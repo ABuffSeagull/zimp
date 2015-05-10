@@ -72,7 +72,8 @@ var shuffle = function(pile) {
 // Player Object//{{{
 var player = {
     x: 11,
-    y: 10
+    y: 10,
+    has_totem: false
 };//}}}
 
 // The Map //{{{
@@ -172,6 +173,12 @@ $(document).ready(function() {
 			lastDir = Number($(this).attr('id')[5]);
 			curRoom = map.grid[player.x][player.y];
 			$('#curRoom').text(curRoom.name);
+			if (curRoom.name === 'Evil Temple' || curRoom.name === 'Graveyard') {
+				$('#curRoom').css('color', 'red');
+			} else {
+				$('#curRoom').css('color', 'black');
+			}
+
 			for (var i = 0; i < 4; i++) {
 				if (curRoom.doors[i] === 'special') {
 					$('#doors' + i).show();
@@ -235,6 +242,13 @@ $(document).ready(function() {
 			$("#rotateButton").hide();
 			$("#lockButton").hide();
 			$('#log').text('');
+			if (curRoom.name == 'Evil Temple') {
+				player.has_totem = true;
+				$('#log').text('Found the totem!');
+			}
+			if (curRoom.name == 'Graveyard' && player.has_totem) {
+				$('#log').text('You win!');
+			}
 		} else {
 			$('#log').text('Illegal Rotation');
 		}
