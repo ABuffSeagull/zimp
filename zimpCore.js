@@ -24,7 +24,7 @@ var Room = function(name, exits) {
 				break;
 		}
 	}//}}}
-	if (this.name === 'Dining Room') {
+	if (this.name === 'Dining Room' || this.name === 'Patio') {
 		this.doors[0] = 'special';
 	}//}}}
 
@@ -160,7 +160,7 @@ $(document).ready(function() {
 	$(".exits").click(function() {
 		curRoom = map.grid[player.x][player.y]
 		if (curRoom.locked) {
-			if ((curRoom.name === 'Dining Room') && curRoom.doors[$(this).attr('id')[5]] === "special") {
+			if (curRoom.doors[$(this).attr('id')[5]] === "special") {
 				side = 1;
 			}
 			if (wall_break = true) {
@@ -175,7 +175,7 @@ $(document).ready(function() {
 			for (var i = 0; i < 4; i++) {
 				if (curRoom.doors[i] === 'special') {
 					$('#doors' + i).show();
-					$('#doors' + i).css('color', 'red');
+					$('#doors' + i).css('color', 'blue');
 				} else if (curRoom.doors[i]) {
 					$('#doors' + i).show();
 					$('#doors' + i).css('color', 'black');
@@ -214,7 +214,7 @@ $(document).ready(function() {
 		for (var i = 0; i < 4; i++) {
 			if (curRoom.doors[i] === 'special') {
 				$('#doors' + i).show();
-				$('#doors' + i).css('color', 'red');
+				$('#doors' + i).css('color', 'blue');
 			} else if (curRoom.doors[i]) {
 				$('#doors' + i).show();
 				$('#doors' + i).css('color', 'black');
